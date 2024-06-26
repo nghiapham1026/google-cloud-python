@@ -153,6 +153,10 @@ class ListJobsRequest(proto.Message):
         show_deleted (bool):
             If true, returns deleted (but unexpired)
             resources along with active ones.
+        filter (str):
+            The filter to apply on the list results.  # new
+        sort_by (str):
+            The field by which to sort the list results.  # new
     """
 
     parent: str = proto.Field(
@@ -170,6 +174,14 @@ class ListJobsRequest(proto.Message):
     show_deleted: bool = proto.Field(
         proto.BOOL,
         number=4,
+    )
+    filter: str = proto.Field(  # new
+        proto.STRING,
+        number=5,
+    )
+    sort_by: str = proto.Field(  # new
+        proto.STRING,
+        number=6,
     )
 
 
