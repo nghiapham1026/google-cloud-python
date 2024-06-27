@@ -72,6 +72,8 @@ from google.cloud.run_v2.types import service
 from google.cloud.run_v2.types import service as gcr_service
 from google.cloud.run_v2.types import traffic_target, vendor_settings
 
+from google.cloud.run_v2.types import ListServicesRequest
+
 
 def client_cert_source_callback():
     return b"cert bytes", b"key bytes"
@@ -8608,3 +8610,46 @@ def test_api_key_credentials(client_class, transport_class):
                 always_use_jwt_access=True,
                 api_audience=None,
             )
+
+
+def test_list_services_request_filter_sort_by():
+    # Create a ListServicesRequest object with filter and sort_by attributes
+    request = ListServicesRequest(
+        parent="projects/my-project/locations/us-central1",
+        filter="metadata.labels.env:prod",
+        sort_by="~metadata.name"
+    )
+    
+    # Assert the filter and sort_by attributes are correctly set
+    assert request.filter == "metadata.labels.env:prod"
+    assert request.sort_by == "~metadata.name"
+
+    # Simulate a client request and response (if necessary)
+    client = ServicesClient()
+    response = client.list_services(request=request)
+
+    # Further assertions can be made here based on expected response behavior
+    # Example: Ensure the response is of the correct type
+    assert isinstance(response, pagers.ListServicesPager)
+
+# Add the test to the async client as well
+@pytest.mark.asyncio
+async def test_list_services_request_filter_sort_by_async():
+    # Create a ListServicesRequest object with filter and sort_by attributes
+    request = ListServicesRequest(
+        parent="projects/my-project/locations/us-central1",
+        filter="metadata.labels.env:prod",
+        sort_by="~metadata.name"
+    )
+    
+    # Assert the filter and sort_by attributes are correctly set
+    assert request.filter == "metadata.labels.env:prod"
+    assert request.sort_by == "~metadata.name"
+
+    # Simulate a client request and response (if necessary)
+    client = ServicesAsyncClient()
+    response = await client.list_services(request=request)
+
+    # Further assertions can be made here based on expected response behavior
+    # Example: Ensure the response is of the correct type
+    assert isinstance(response, pagers.ListServicesAsyncPager)

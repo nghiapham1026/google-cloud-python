@@ -63,6 +63,8 @@ from google.cloud.run_v2.services.executions import (
 )
 from google.cloud.run_v2.types import condition, execution, task_template
 
+from google.cloud.run_v2.types import ListExecutionsRequest
+
 
 def client_cert_source_callback():
     return b"cert bytes", b"key bytes"
@@ -5939,3 +5941,46 @@ def test_api_key_credentials(client_class, transport_class):
                 always_use_jwt_access=True,
                 api_audience=None,
             )
+
+
+def test_list_executions_request_filter_sort_by():
+    # Create a ListExecutionsRequest object with filter and sort_by attributes
+    request = ListExecutionsRequest(
+        parent="projects/my-project/locations/us-central1/jobs/my-job",
+        filter="status=SUCCESS",
+        sort_by="create_time"
+    )
+    
+    # Assert the filter and sort_by attributes are correctly set
+    assert request.filter == "status=SUCCESS"
+    assert request.sort_by == "create_time"
+
+    # Simulate a client request and response (if necessary)
+    client = ExecutionsClient()
+    response = client.list_executions(request=request)
+
+    # Further assertions can be made here based on expected response behavior
+    # Example: Ensure the response is of the correct type
+    assert isinstance(response, pagers.ListExecutionsPager)
+
+# Add the test to the async client as well
+@pytest.mark.asyncio
+async def test_list_executions_request_filter_sort_by_async():
+    # Create a ListExecutionsRequest object with filter and sort_by attributes
+    request = ListExecutionsRequest(
+        parent="projects/my-project/locations/us-central1/jobs/my-job",
+        filter="status=SUCCESS",
+        sort_by="create_time"
+    )
+    
+    # Assert the filter and sort_by attributes are correctly set
+    assert request.filter == "status=SUCCESS"
+    assert request.sort_by == "create_time"
+
+    # Simulate a client request and response (if necessary)
+    client = ExecutionsAsyncClient()
+    response = await client.list_executions(request=request)
+
+    # Further assertions can be made here based on expected response behavior
+    # Example: Ensure the response is of the correct type
+    assert isinstance(response, pagers.ListExecutionsAsyncPager)

@@ -70,6 +70,8 @@ from google.cloud.run_v2.types import (
     vendor_settings,
 )
 
+from google.cloud.run_v2.types import ListRevisionsRequest
+
 
 def client_cert_source_callback():
     return b"cert bytes", b"key bytes"
@@ -5152,3 +5154,46 @@ def test_api_key_credentials(client_class, transport_class):
                 always_use_jwt_access=True,
                 api_audience=None,
             )
+
+
+def test_list_revisions_request_filter_sort_by():
+    # Create a ListRevisionsRequest object with filter and sort_by attributes
+    request = ListRevisionsRequest(
+        parent="projects/my-project/locations/us-central1/services/my-service",
+        filter="status=SUCCESS",
+        sort_by="create_time"
+    )
+    
+    # Assert the filter and sort_by attributes are correctly set
+    assert request.filter == "status=SUCCESS"
+    assert request.sort_by == "create_time"
+
+    # Simulate a client request and response (if necessary)
+    client = RevisionsClient()
+    response = client.list_revisions(request=request)
+
+    # Further assertions can be made here based on expected response behavior
+    # Example: Ensure the response is of the correct type
+    assert isinstance(response, pagers.ListRevisionsPager)
+
+# Add the test to the async client as well
+@pytest.mark.asyncio
+async def test_list_revisions_request_filter_sort_by_async():
+    # Create a ListRevisionsRequest object with filter and sort_by attributes
+    request = ListRevisionsRequest(
+        parent="projects/my-project/locations/us-central1/services/my-service",
+        filter="status=SUCCESS",
+        sort_by="create_time"
+    )
+    
+    # Assert the filter and sort_by attributes are correctly set
+    assert request.filter == "status=SUCCESS"
+    assert request.sort_by == "create_time"
+
+    # Simulate a client request and response (if necessary)
+    client = RevisionsAsyncClient()
+    response = await client.list_revisions(request=request)
+
+    # Further assertions can be made here based on expected response behavior
+    # Example: Ensure the response is of the correct type
+    assert isinstance(response, pagers.ListRevisionsAsyncPager)
