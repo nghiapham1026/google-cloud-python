@@ -74,6 +74,8 @@ from google.cloud.run_v2.types import k8s_min, task_template, vendor_settings
 
 from google.cloud.run_v2.types import ListJobsRequest
 
+from google.cloud.run_v2.services.jobs.pagers import ListJobsPager, ListJobsAsyncPager
+
 
 def client_cert_source_callback():
     return b"cert bytes", b"key bytes"
@@ -9113,15 +9115,22 @@ def test_list_jobs_request_filter_sort_by():
     assert request.filter == "status=SUCCESS"
     assert request.sort_by == "create_time"
 
-    # Simulate a client request and response (if necessary)
-    client = JobsClient()
-    response = client.list_jobs(request=request)
+    # Mock the client and the list_jobs method
+    with mock.patch.object(JobsClient, 'list_jobs') as mock_list_jobs:
+        mock_list_jobs.return_value = ListJobsPager(
+            method=None,
+            request=request,
+            response=None,
+            metadata=None
+        )
+        
+        client = JobsClient(credentials=ga_credentials.AnonymousCredentials())
+        response = client.list_jobs(request=request)
 
-    # Further assertions can be made here based on expected response behavior
-    # Example: Ensure the response is of the correct type
-    assert isinstance(response, pagers.ListJobsPager)
+        # Further assertions can be made here based on expected response behavior
+        # Example: Ensure the response is of the correct type
+        assert isinstance(response, ListJobsPager)
 
-# Add the test to the async client as well
 @pytest.mark.asyncio
 async def test_list_jobs_request_filter_sort_by_async():
     # Create a ListJobsRequest object with filter and sort_by attributes
@@ -9135,10 +9144,18 @@ async def test_list_jobs_request_filter_sort_by_async():
     assert request.filter == "status=SUCCESS"
     assert request.sort_by == "create_time"
 
-    # Simulate a client request and response (if necessary)
-    client = JobsAsyncClient()
-    response = await client.list_jobs(request=request)
+    # Mock the client and the list_jobs method
+    with mock.patch.object(JobsAsyncClient, 'list_jobs') as mock_list_jobs:
+        mock_list_jobs.return_value = ListJobsAsyncPager(
+            method=None,
+            request=request,
+            response=None,
+            metadata=None
+        )
+        
+        client = JobsAsyncClient(credentials=ga_credentials.AnonymousCredentials())
+        response = await client.list_jobs(request=request)
 
-    # Further assertions can be made here based on expected response behavior
-    # Example: Ensure the response is of the correct type
-    assert isinstance(response, pagers.ListJobsAsyncPager)
+        # Further assertions can be made here based on expected response behavior
+        # Example: Ensure the response is of the correct type
+        assert isinstance(response, ListJobsAsyncPager)

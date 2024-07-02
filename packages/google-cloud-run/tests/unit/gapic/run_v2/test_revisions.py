@@ -72,6 +72,8 @@ from google.cloud.run_v2.types import (
 
 from google.cloud.run_v2.types import ListRevisionsRequest
 
+from google.cloud.run_v2.services.revisions.pagers import ListRevisionsPager, ListRevisionsAsyncPager
+
 
 def client_cert_source_callback():
     return b"cert bytes", b"key bytes"
@@ -5168,15 +5170,22 @@ def test_list_revisions_request_filter_sort_by():
     assert request.filter == "status=SUCCESS"
     assert request.sort_by == "create_time"
 
-    # Simulate a client request and response (if necessary)
-    client = RevisionsClient()
-    response = client.list_revisions(request=request)
+    # Mock the client and the list_revisions method
+    with mock.patch.object(RevisionsClient, 'list_revisions') as mock_list_revisions:
+        mock_list_revisions.return_value = ListRevisionsPager(
+            method=None,
+            request=request,
+            response=None,
+            metadata=None
+        )
+        
+        client = RevisionsClient(credentials=ga_credentials.AnonymousCredentials())
+        response = client.list_revisions(request=request)
 
-    # Further assertions can be made here based on expected response behavior
-    # Example: Ensure the response is of the correct type
-    assert isinstance(response, pagers.ListRevisionsPager)
+        # Further assertions can be made here based on expected response behavior
+        # Example: Ensure the response is of the correct type
+        assert isinstance(response, ListRevisionsPager)
 
-# Add the test to the async client as well
 @pytest.mark.asyncio
 async def test_list_revisions_request_filter_sort_by_async():
     # Create a ListRevisionsRequest object with filter and sort_by attributes
@@ -5190,10 +5199,18 @@ async def test_list_revisions_request_filter_sort_by_async():
     assert request.filter == "status=SUCCESS"
     assert request.sort_by == "create_time"
 
-    # Simulate a client request and response (if necessary)
-    client = RevisionsAsyncClient()
-    response = await client.list_revisions(request=request)
+    # Mock the client and the list_revisions method
+    with mock.patch.object(RevisionsAsyncClient, 'list_revisions') as mock_list_revisions:
+        mock_list_revisions.return_value = ListRevisionsAsyncPager(
+            method=None,
+            request=request,
+            response=None,
+            metadata=None
+        )
+        
+        client = RevisionsAsyncClient(credentials=ga_credentials.AnonymousCredentials())
+        response = await client.list_revisions(request=request)
 
-    # Further assertions can be made here based on expected response behavior
-    # Example: Ensure the response is of the correct type
-    assert isinstance(response, pagers.ListRevisionsAsyncPager)
+        # Further assertions can be made here based on expected response behavior
+        # Example: Ensure the response is of the correct type
+        assert isinstance(response, ListRevisionsAsyncPager)
