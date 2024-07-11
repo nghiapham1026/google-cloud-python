@@ -72,7 +72,7 @@ from google.cloud.run_v2.types import job
 from google.cloud.run_v2.types import job as gcr_job
 from google.cloud.run_v2.types import k8s_min, task_template, vendor_settings
 
-from google.cloud.run_v2.types import ListJobsRequest
+from google.cloud.run_v2.types import Job, ListJobsRequest, ListJobsResponse
 
 from google.cloud.run_v2.services.jobs.pagers import ListJobsPager, ListJobsAsyncPager
 
@@ -9107,55 +9107,73 @@ def test_list_jobs_request_filter_sort_by():
     # Create a ListJobsRequest object with filter and sort_by attributes
     request = ListJobsRequest(
         parent="projects/my-project/locations/us-central1",
-        filter="status=SUCCESS",
+        filter="create_time>2023-01-01T00:00:00Z",
         sort_by="create_time"
     )
     
     # Assert the filter and sort_by attributes are correctly set
-    assert request.filter == "status=SUCCESS"
+    assert request.filter == "create_time>2023-01-01T00:00:00Z"
     assert request.sort_by == "create_time"
 
+    # Mock the response data
+    mock_response = ListJobsResponse(
+        jobs=[
+            Job(name="projects/my-project/locations/us-central1/jobs/job1", create_time=timestamp_pb2.Timestamp(seconds=1672531200)),
+            Job(name="projects/my-project/locations/us-central1/jobs/job2", create_time=timestamp_pb2.Timestamp(seconds=1672617600)),
+        ],
+        next_page_token=""
+    )
+    
     # Mock the client and the list_jobs method
-    with mock.patch.object(JobsClient, 'list_jobs') as mock_list_jobs:
-        mock_list_jobs.return_value = ListJobsPager(
-            method=None,
-            request=request,
-            response=None,
-            metadata=None
-        )
-        
+    with mock.patch.object(JobsClient, 'list_jobs', return_value=mock_response) as mock_list_jobs:
         client = JobsClient(credentials=ga_credentials.AnonymousCredentials())
         response = client.list_jobs(request=request)
 
+        # Ensure the response is of the correct type
+        assert isinstance(response, ListJobsResponse), f"Expected ListJobsResponse, got {type(response)}"
+
+        # Ensure the response content matches the mock response
+        assert len(response.jobs) == 2, f"Expected 2 jobs, got {len(response.jobs)}"
+        assert response.jobs[0].name == 'projects/my-project/locations/us-central1/jobs/job1', f"Unexpected job name: {response.jobs[0].name}"
+        assert response.jobs[1].name == 'projects/my-project/locations/us-central1/jobs/job2', f"Unexpected job name: {response.jobs[1].name}"
+
         # Further assertions can be made here based on expected response behavior
-        # Example: Ensure the response is of the correct type
-        assert isinstance(response, ListJobsPager)
+        mock_list_jobs.assert_called_once_with(request=request)
 
 @pytest.mark.asyncio
 async def test_list_jobs_request_filter_sort_by_async():
     # Create a ListJobsRequest object with filter and sort_by attributes
     request = ListJobsRequest(
         parent="projects/my-project/locations/us-central1",
-        filter="status=SUCCESS",
+        filter="create_time>2023-01-01T00:00:00Z",
         sort_by="create_time"
     )
     
     # Assert the filter and sort_by attributes are correctly set
-    assert request.filter == "status=SUCCESS"
+    assert request.filter == "create_time>2023-01-01T00:00:00Z"
     assert request.sort_by == "create_time"
 
+    # Mock the response data
+    mock_response = ListJobsResponse(
+        jobs=[
+            Job(name="projects/my-project/locations/us-central1/jobs/job1", create_time=timestamp_pb2.Timestamp(seconds=1672531200)),
+            Job(name="projects/my-project/locations/us-central1/jobs/job2", create_time=timestamp_pb2.Timestamp(seconds=1672617600)),
+        ],
+        next_page_token=""
+    )
+
     # Mock the client and the list_jobs method
-    with mock.patch.object(JobsAsyncClient, 'list_jobs') as mock_list_jobs:
-        mock_list_jobs.return_value = ListJobsAsyncPager(
-            method=None,
-            request=request,
-            response=None,
-            metadata=None
-        )
-        
+    with mock.patch.object(JobsAsyncClient, 'list_jobs', return_value=mock_response) as mock_list_jobs:
         client = JobsAsyncClient(credentials=ga_credentials.AnonymousCredentials())
         response = await client.list_jobs(request=request)
 
+        # Ensure the response is of the correct type
+        assert isinstance(response, ListJobsResponse), f"Expected ListJobsResponse, got {type(response)}"
+
+        # Ensure the response content matches the mock response
+        assert len(response.jobs) == 2, f"Expected 2 jobs, got {len(response.jobs)}"
+        assert response.jobs[0].name == 'projects/my-project/locations/us-central1/jobs/job1', f"Unexpected job name: {response.jobs[0].name}"
+        assert response.jobs[1].name == 'projects/my-project/locations/us-central1/jobs/job2', f"Unexpected job name: {response.jobs[1].name}"
+
         # Further assertions can be made here based on expected response behavior
-        # Example: Ensure the response is of the correct type
-        assert isinstance(response, ListJobsAsyncPager)
+        mock_list_jobs.assert_called_once_with(request=request)

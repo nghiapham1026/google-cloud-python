@@ -72,7 +72,7 @@ from google.cloud.run_v2.types import service
 from google.cloud.run_v2.types import service as gcr_service
 from google.cloud.run_v2.types import traffic_target, vendor_settings
 
-from google.cloud.run_v2.types import ListServicesRequest
+from google.cloud.run_v2.types import Service, ListServicesResponse, ListServicesRequest
 
 from google.cloud.run_v2.services.services.pagers import ListServicesPager, ListServicesAsyncPager
 
@@ -8618,55 +8618,73 @@ def test_list_services_request_filter_sort_by():
     # Create a ListServicesRequest object with filter and sort_by attributes
     request = ListServicesRequest(
         parent="projects/my-project/locations/us-central1",
-        filter="metadata.labels.env:prod",
+        filter="metadata.labels.env:prod*",
         sort_by="~metadata.name"
     )
     
     # Assert the filter and sort_by attributes are correctly set
-    assert request.filter == "metadata.labels.env:prod"
+    assert request.filter == "metadata.labels.env:prod*"
     assert request.sort_by == "~metadata.name"
 
+    # Mock the response data
+    mock_response = ListServicesResponse(
+        services=[
+            Service(name="service2", metadata={"labels": {"env": "prod"}}),
+            Service(name="service1", metadata={"labels": {"env": "prod"}}),
+        ],
+        next_page_token=""
+    )
+    
     # Mock the client and the list_services method
-    with mock.patch.object(ServicesClient, 'list_services') as mock_list_services:
-        mock_list_services.return_value = ListServicesPager(
-            method=None,
-            request=request,
-            response=None,
-            metadata=None
-        )
-        
+    with mock.patch.object(ServicesClient, 'list_services', return_value=mock_response) as mock_list_services:
         client = ServicesClient(credentials=ga_credentials.AnonymousCredentials())
         response = client.list_services(request=request)
 
+        # Ensure the response is of the correct type
+        assert isinstance(response, ListServicesResponse), f"Expected ListServicesResponse, got {type(response)}"
+
+        # Ensure the response content matches the mock response
+        assert len(response.services) == 2, f"Expected 2 services, got {len(response.services)}"
+        assert response.services[0].name == 'service2', f"Unexpected service name: {response.services[0].name}"
+        assert response.services[1].name == 'service1', f"Unexpected service name: {response.services[1].name}"
+
         # Further assertions can be made here based on expected response behavior
-        # Example: Ensure the response is of the correct type
-        assert isinstance(response, ListServicesPager)
+        mock_list_services.assert_called_once_with(request=request)
 
 @pytest.mark.asyncio
 async def test_list_services_request_filter_sort_by_async():
     # Create a ListServicesRequest object with filter and sort_by attributes
     request = ListServicesRequest(
         parent="projects/my-project/locations/us-central1",
-        filter="metadata.labels.env:prod",
+        filter="metadata.labels.env:prod*",
         sort_by="~metadata.name"
     )
     
     # Assert the filter and sort_by attributes are correctly set
-    assert request.filter == "metadata.labels.env:prod"
+    assert request.filter == "metadata.labels.env:prod*"
     assert request.sort_by == "~metadata.name"
 
+    # Mock the response data
+    mock_response = ListServicesResponse(
+        services=[
+            Service(name="service2", metadata={"labels": {"env": "prod"}}),
+            Service(name="service1", metadata={"labels": {"env": "prod"}}),
+        ],
+        next_page_token=""
+    )
+
     # Mock the client and the list_services method
-    with mock.patch.object(ServicesAsyncClient, 'list_services') as mock_list_services:
-        mock_list_services.return_value = ListServicesAsyncPager(
-            method=None,
-            request=request,
-            response=None,
-            metadata=None
-        )
-        
+    with mock.patch.object(ServicesAsyncClient, 'list_services', return_value=mock_response) as mock_list_services:
         client = ServicesAsyncClient(credentials=ga_credentials.AnonymousCredentials())
         response = await client.list_services(request=request)
 
+        # Ensure the response is of the correct type
+        assert isinstance(response, ListServicesResponse), f"Expected ListServicesResponse, got {type(response)}"
+
+        # Ensure the response content matches the mock response
+        assert len(response.services) == 2, f"Expected 2 services, got {len(response.services)}"
+        assert response.services[0].name == 'service2', f"Unexpected service name: {response.services[0].name}"
+        assert response.services[1].name == 'service1', f"Unexpected service name: {response.services[1].name}"
+
         # Further assertions can be made here based on expected response behavior
-        # Example: Ensure the response is of the correct type
-        assert isinstance(response, ListServicesAsyncPager)
+        mock_list_services.assert_called_once_with(request=request)
