@@ -53,7 +53,7 @@ from google.cloud.run_v2.services.tasks import (
     transports,
 )
 from google.cloud.run_v2.types import condition, k8s_min, task, vendor_settings
-from google.cloud.run_v2.types import ListTasksRequest
+from google.cloud.run_v2.types import Task, ListTasksRequest, ListTasksResponse
 
 from google.cloud.run_v2.services.tasks.pagers import ListTasksPager, ListTasksAsyncPager
 
@@ -4502,21 +4502,30 @@ def test_list_tasks_request_filter_sort_by():
     assert request.filter == "status=SUCCESS"
     assert request.sort_by == "create_time"
 
+    # Mock the response data
+    mock_response = ListTasksResponse(
+        tasks=[
+            Task(name="projects/my-project/locations/us-central1/jobs/my-job/executions/my-execution/tasks/task2"),
+            Task(name="projects/my-project/locations/us-central1/jobs/my-job/executions/my-execution/tasks/task1"),
+        ],
+        next_page_token=""
+    )
+    
     # Mock the client and the list_tasks method
-    with mock.patch.object(TasksClient, 'list_tasks') as mock_list_tasks:
-        mock_list_tasks.return_value = ListTasksPager(
-            method=None,
-            request=request,
-            response=None,
-            metadata=None
-        )
-        
+    with mock.patch.object(TasksClient, 'list_tasks', return_value=mock_response) as mock_list_tasks:
         client = TasksClient(credentials=ga_credentials.AnonymousCredentials())
         response = client.list_tasks(request=request)
 
+        # Ensure the response is of the correct type
+        assert isinstance(response, ListTasksResponse), f"Expected ListTasksResponse, got {type(response)}"
+
+        # Ensure the response content matches the mock response
+        assert len(response.tasks) == 2, f"Expected 2 tasks, got {len(response.tasks)}"
+        assert response.tasks[0].name == 'projects/my-project/locations/us-central1/jobs/my-job/executions/my-execution/tasks/task2', f"Unexpected task name: {response.tasks[0].name}"
+        assert response.tasks[1].name == 'projects/my-project/locations/us-central1/jobs/my-job/executions/my-execution/tasks/task1', f"Unexpected task name: {response.tasks[1].name}"
+
         # Further assertions can be made here based on expected response behavior
-        # Example: Ensure the response is of the correct type
-        assert isinstance(response, ListTasksPager)
+        mock_list_tasks.assert_called_once_with(request=request)
 
 @pytest.mark.asyncio
 async def test_list_tasks_request_filter_sort_by_async():
@@ -4531,18 +4540,27 @@ async def test_list_tasks_request_filter_sort_by_async():
     assert request.filter == "status=SUCCESS"
     assert request.sort_by == "create_time"
 
+    # Mock the response data
+    mock_response = ListTasksResponse(
+        tasks=[
+            Task(name="projects/my-project/locations/us-central1/jobs/my-job/executions/my-execution/tasks/task2"),
+            Task(name="projects/my-project/locations/us-central1/jobs/my-job/executions/my-execution/tasks/task1"),
+        ],
+        next_page_token=""
+    )
+
     # Mock the client and the list_tasks method
-    with mock.patch.object(TasksAsyncClient, 'list_tasks') as mock_list_tasks:
-        mock_list_tasks.return_value = ListTasksAsyncPager(
-            method=None,
-            request=request,
-            response=None,
-            metadata=None
-        )
-        
+    with mock.patch.object(TasksAsyncClient, 'list_tasks', return_value=mock_response) as mock_list_tasks:
         client = TasksAsyncClient(credentials=ga_credentials.AnonymousCredentials())
         response = await client.list_tasks(request=request)
 
+        # Ensure the response is of the correct type
+        assert isinstance(response, ListTasksResponse), f"Expected ListTasksResponse, got {type(response)}"
+
+        # Ensure the response content matches the mock response
+        assert len(response.tasks) == 2, f"Expected 2 tasks, got {len(response.tasks)}"
+        assert response.tasks[0].name == 'projects/my-project/locations/us-central1/jobs/my-job/executions/my-execution/tasks/task2', f"Unexpected task name: {response.tasks[0].name}"
+        assert response.tasks[1].name == 'projects/my-project/locations/us-central1/jobs/my-job/executions/my-execution/tasks/task1', f"Unexpected task name: {response.tasks[1].name}"
+
         # Further assertions can be made here based on expected response behavior
-        # Example: Ensure the response is of the correct type
-        assert isinstance(response, ListTasksAsyncPager)
+        mock_list_tasks.assert_called_once_with(request=request)

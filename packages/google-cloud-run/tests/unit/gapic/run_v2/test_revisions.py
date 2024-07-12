@@ -70,7 +70,7 @@ from google.cloud.run_v2.types import (
     vendor_settings,
 )
 
-from google.cloud.run_v2.types import ListRevisionsRequest
+from google.cloud.run_v2.types import Revision, ListRevisionsRequest, ListRevisionsResponse
 
 from google.cloud.run_v2.services.revisions.pagers import ListRevisionsPager, ListRevisionsAsyncPager
 
@@ -5170,21 +5170,30 @@ def test_list_revisions_request_filter_sort_by():
     assert request.filter == "status=SUCCESS"
     assert request.sort_by == "create_time"
 
+    # Mock the response data
+    mock_response = ListRevisionsResponse(
+        revisions=[
+            Revision(name="projects/my-project/locations/us-central1/services/my-service/revisions/revision2"),
+            Revision(name="projects/my-project/locations/us-central1/services/my-service/revisions/revision1"),
+        ],
+        next_page_token=""
+    )
+    
     # Mock the client and the list_revisions method
-    with mock.patch.object(RevisionsClient, 'list_revisions') as mock_list_revisions:
-        mock_list_revisions.return_value = ListRevisionsPager(
-            method=None,
-            request=request,
-            response=None,
-            metadata=None
-        )
-        
+    with mock.patch.object(RevisionsClient, 'list_revisions', return_value=mock_response) as mock_list_revisions:
         client = RevisionsClient(credentials=ga_credentials.AnonymousCredentials())
         response = client.list_revisions(request=request)
 
+        # Ensure the response is of the correct type
+        assert isinstance(response, ListRevisionsResponse), f"Expected ListRevisionsResponse, got {type(response)}"
+
+        # Ensure the response content matches the mock response
+        assert len(response.revisions) == 2, f"Expected 2 revisions, got {len(response.revisions)}"
+        assert response.revisions[0].name == 'projects/my-project/locations/us-central1/services/my-service/revisions/revision2', f"Unexpected revision name: {response.revisions[0].name}"
+        assert response.revisions[1].name == 'projects/my-project/locations/us-central1/services/my-service/revisions/revision1', f"Unexpected revision name: {response.revisions[1].name}"
+
         # Further assertions can be made here based on expected response behavior
-        # Example: Ensure the response is of the correct type
-        assert isinstance(response, ListRevisionsPager)
+        mock_list_revisions.assert_called_once_with(request=request)
 
 @pytest.mark.asyncio
 async def test_list_revisions_request_filter_sort_by_async():
@@ -5199,18 +5208,27 @@ async def test_list_revisions_request_filter_sort_by_async():
     assert request.filter == "status=SUCCESS"
     assert request.sort_by == "create_time"
 
+    # Mock the response data
+    mock_response = ListRevisionsResponse(
+        revisions=[
+            Revision(name="projects/my-project/locations/us-central1/services/my-service/revisions/revision2"),
+            Revision(name="projects/my-project/locations/us-central1/services/my-service/revisions/revision1"),
+        ],
+        next_page_token=""
+    )
+
     # Mock the client and the list_revisions method
-    with mock.patch.object(RevisionsAsyncClient, 'list_revisions') as mock_list_revisions:
-        mock_list_revisions.return_value = ListRevisionsAsyncPager(
-            method=None,
-            request=request,
-            response=None,
-            metadata=None
-        )
-        
+    with mock.patch.object(RevisionsAsyncClient, 'list_revisions', return_value=mock_response) as mock_list_revisions:
         client = RevisionsAsyncClient(credentials=ga_credentials.AnonymousCredentials())
         response = await client.list_revisions(request=request)
 
+        # Ensure the response is of the correct type
+        assert isinstance(response, ListRevisionsResponse), f"Expected ListRevisionsResponse, got {type(response)}"
+
+        # Ensure the response content matches the mock response
+        assert len(response.revisions) == 2, f"Expected 2 revisions, got {len(response.revisions)}"
+        assert response.revisions[0].name == 'projects/my-project/locations/us-central1/services/my-service/revisions/revision2', f"Unexpected revision name: {response.revisions[0].name}"
+        assert response.revisions[1].name == 'projects/my-project/locations/us-central1/services/my-service/revisions/revision1', f"Unexpected revision name: {response.revisions[1].name}"
+
         # Further assertions can be made here based on expected response behavior
-        # Example: Ensure the response is of the correct type
-        assert isinstance(response, ListRevisionsAsyncPager)
+        mock_list_revisions.assert_called_once_with(request=request)
