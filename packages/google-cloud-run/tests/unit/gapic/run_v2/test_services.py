@@ -8629,8 +8629,8 @@ def test_list_services_request_filter_sort_by():
     # Mock the response data
     mock_response = ListServicesResponse(
         services=[
-            Service(name="service2", metadata={"labels": {"env": "prod"}}),
-            Service(name="service1", metadata={"labels": {"env": "prod"}}),
+            Service(name="projects/my-project/locations/us-central1/services/service2", labels={"env": "prod"}),
+            Service(name="projects/my-project/locations/us-central1/services/service1", labels={"env": "prod"}),
         ],
         next_page_token=""
     )
@@ -8645,8 +8645,8 @@ def test_list_services_request_filter_sort_by():
 
         # Ensure the response content matches the mock response
         assert len(response.services) == 2, f"Expected 2 services, got {len(response.services)}"
-        assert response.services[0].name == 'service2', f"Unexpected service name: {response.services[0].name}"
-        assert response.services[1].name == 'service1', f"Unexpected service name: {response.services[1].name}"
+        assert response.services[0].name == 'projects/my-project/locations/us-central1/services/service2', f"Unexpected service name: {response.services[0].name}"
+        assert response.services[1].name == 'projects/my-project/locations/us-central1/services/service1', f"Unexpected service name: {response.services[1].name}"
 
         # Further assertions can be made here based on expected response behavior
         mock_list_services.assert_called_once_with(request=request)
@@ -8667,8 +8667,8 @@ async def test_list_services_request_filter_sort_by_async():
     # Mock the response data
     mock_response = ListServicesResponse(
         services=[
-            Service(name="service2", metadata={"labels": {"env": "prod"}}),
-            Service(name="service1", metadata={"labels": {"env": "prod"}}),
+            Service(name="projects/my-project/locations/us-central1/services/service2", labels={"env": "prod"}),
+            Service(name="projects/my-project/locations/us-central1/services/service1", labels={"env": "prod"}),
         ],
         next_page_token=""
     )
@@ -8683,8 +8683,8 @@ async def test_list_services_request_filter_sort_by_async():
 
         # Ensure the response content matches the mock response
         assert len(response.services) == 2, f"Expected 2 services, got {len(response.services)}"
-        assert response.services[0].name == 'service2', f"Unexpected service name: {response.services[0].name}"
-        assert response.services[1].name == 'service1', f"Unexpected service name: {response.services[1].name}"
+        assert response.services[0].name == 'projects/my-project/locations/us-central1/services/service2', f"Unexpected service name: {response.services[0].name}"
+        assert response.services[1].name == 'projects/my-project/locations/us-central1/services/service1', f"Unexpected service name: {response.services[1].name}"
 
         # Further assertions can be made here based on expected response behavior
         mock_list_services.assert_called_once_with(request=request)
